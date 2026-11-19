@@ -140,7 +140,7 @@ const projects = [
       "A number matching game where players try to match a target number within limited chances.",
     technologies: ["React", "JavaScript", "Tailwind CSS"],
     image: "/projects_img/numbermatch.png",
-    live: "https://sivaraj-bit.github.io/NumberMatch-React-Game/",
+    live: "https://number-match-react-game.vercel.app/",
     github: "https://github.com/sivaraj-bit/NumberMatch-React",
   },
 ];
