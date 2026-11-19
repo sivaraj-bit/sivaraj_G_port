@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
-import { socialLinks } from "../data/socials";
 import { navLinks } from "../data/navLinks";
-
-
+import { socialLinks } from "../data/socials";
+import ThemeToggle from "./ThemeToggle";
 
 function Navbar() {
   const [activeSection, setActiveSection] = useState("home");
@@ -85,26 +84,29 @@ function Navbar() {
           })}
         </div>
 
-        {/* Desktop CTA */}
-        <a
-          href="#contact"
-          className="hidden items-center gap-1.5 rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-page transition-colors duration-300 hover:bg-brand-dark md:inline-flex"
-        >
-          Hire Me
-          <ArrowUpRight size={16} />
-        </a>
+        {/* Right side: theme toggle, Hire Me (desktop), menu button (mobile) */}
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
 
-        {/* Mobile menu button */}
-        <button
-          type="button"
-          onClick={() => setMenuOpen((open) => !open)}
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={menuOpen}
-          aria-controls="mobile-menu"
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-ink transition-colors duration-300 hover:border-brand hover:text-brand md:hidden"
-        >
-          {menuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
+          <a
+            href="#contact"
+            className="hidden items-center gap-1.5 rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-page transition-colors duration-300 hover:bg-brand-dark md:inline-flex"
+          >
+            Hire Me
+            <ArrowUpRight size={16} />
+          </a>
+
+          <button
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-line text-ink transition-colors duration-300 hover:border-brand hover:text-brand md:hidden"
+          >
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu */}

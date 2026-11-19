@@ -1,17 +1,38 @@
 import { useState } from "react";
 import emailjs from "@emailjs/browser";
-import { ArrowUpRight, Send } from "lucide-react";
+import { ArrowUpRight, Check, Copy, Send } from "lucide-react";
 import { socialLinks } from "../data/socials";
 
-// Show only email, GitHub and LinkedIn here (the resume has its own buttons)
+// Show only email, GitHub and LinkedIn here (the resume has its own button)
 const contactLinks = socialLinks.filter((link) => link.name !== "Resume");
+const emailAddress = socialLinks
+  .find((link) => link.name === "Email")
+  ?.href.replace("mailto:", "");
+
+const MESSAGE_LIMIT = 3000;
 
 function Contact() {
   const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [messageLength, setMessageLength] = useState(0);
   const [status, setStatus] = useState({
     type: "",
     message: "",
   });
+
+  const handleCopyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(emailAddress);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard blocked: the address is still visible and selectable on the page
+      setStatus({
+        type: "error",
+        message: `Could not copy automatically. My email is ${emailAddress}`,
+      });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +45,7 @@ function Contact() {
     // Honeypot: real visitors never see this field, bots usually fill it in
     if (formData.get("company")) {
       form.reset();
+      setMessageLength(0);
       return;
     }
 
@@ -59,14 +81,7 @@ function Contact() {
     setStatus({ type: "", message: "" });
 
     try {
-      const response = await emailjs.send(
-        serviceID,
-        templateID,
-        templateParams,
-        publicKey
-      );
-
-      console.log("EmailJS Success:", response);
+      await emailjs.send(serviceID, templateID, templateParams, publicKey);
 
       setStatus({
         type: "success",
@@ -74,6 +89,7 @@ function Contact() {
       });
 
       form.reset();
+      setMessageLength(0);
     } catch (error) {
       console.error("EmailJS Error:", error);
       console.error("Error status:", error.status);
@@ -141,7 +157,7 @@ function Contact() {
                     <span className="block text-xs text-muted">{name}</span>
                     <span className="block break-all font-medium">
                       {name === "Email"
-                        ? href.replace("mailto:", "")
+                        ? emailAddress
                         : href.replace("https://", "").replace("www.", "")}
                     </span>
                   </span>
@@ -154,15 +170,26 @@ function Contact() {
               ))}
             </div>
 
-            <a
-              href="/Sivaraj_G_CV.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-8 inline-flex items-center justify-center gap-1.5 self-start rounded-full border border-line px-6 py-3 text-sm font-semibold text-ink transition-colors duration-300 hover:border-brand hover:text-brand"
-            >
-              View My CV
-              <ArrowUpRight size={16} />
-            </a>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={handleCopyEmail}
+                className="inline-flex items-center justify-center gap-1.5 rounded-full border border-line px-6 py-3 text-sm font-semibold text-ink transition-colors duration-300 hover:border-brand hover:text-brand"
+              >
+                {copied ? <Check size={16} /> : <Copy size={16} />}
+                {copied ? "Copied!" : "Copy email"}
+              </button>
+
+              <a
+                href="/Sivaraj_G_CV.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 rounded-full border border-line px-6 py-3 text-sm font-semibold text-ink transition-colors duration-300 hover:border-brand hover:text-brand"
+              >
+                View My CV
+                <ArrowUpRight size={16} />
+              </a>
+            </div>
           </div>
 
           {/* Contact form */}
@@ -223,17 +250,22 @@ function Contact() {
                   placeholder="Your Message"
                   rows="6"
                   required
-                  maxLength={3000}
+                  maxLength={MESSAGE_LIMIT}
+                  onChange={(e) => setMessageLength(e.target.value.length)}
                   className={`${inputClasses} resize-none`}
                 />
+                <p className="mt-2 text-right text-xs text-muted">
+                  {messageLength} / {MESSAGE_LIMIT}
+                </p>
               </div>
 
               {status.message && (
                 <p
-                  role="status"
-                  aria-live="polite"
+                  role={status.type === "error" ? "alert" : "status"}
                   className={`text-sm leading-6 ${
-                    status.type === "success" ? "text-brand" : "text-red-400"
+                    status.type === "success"
+                      ? "text-brand"
+                      : "text-red-600 dark:text-red-400"
                   }`}
                 >
                   {status.message}

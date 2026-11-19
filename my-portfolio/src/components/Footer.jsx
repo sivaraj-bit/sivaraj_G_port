@@ -1,30 +1,69 @@
 import { ArrowUp, ArrowUpRight } from "lucide-react";
+import projects from "../data/projects";
 import { navLinks } from "../data/navLinks";
 import { socialLinks } from "../data/socials";
+
+const featuredProjects = projects.filter((project) => project.featured);
 
 function Footer() {
   const year = new Date().getFullYear();
   const email = socialLinks.find((link) => link.name === "Email");
+  const emailAddress = email?.href.replace("mailto:", "");
 
   return (
-    <footer className="border-t border-line bg-card px-6 pt-14 md:px-10">
-      <div className="mx-auto max-w-7xl">
-        <div className="grid gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_1fr]">
-          {/* Brand */}
+    <footer className="border-t border-line bg-card text-ink">
+      <div className="mx-auto max-w-7xl px-6 md:px-10">
+        {/* Top band */}
+        <div className="flex flex-col gap-6 border-b border-line py-12 md:flex-row md:items-center md:justify-between">
+          <div className="max-w-xl">
+            <h2 className="text-2xl font-bold md:text-3xl">
+              Looking for a developer to join your team?
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-muted sm:text-base">
+              I am open to entry-level full stack roles. Send me a message and
+              I will get back to you.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            {email && (
+              <a
+                href={email.href}
+                className="inline-flex items-center gap-1.5 rounded-full bg-brand px-7 py-3 text-sm font-semibold text-page transition-colors duration-300 hover:bg-brand-dark"
+              >
+                Email Me
+                <ArrowUpRight size={16} />
+              </a>
+            )}
+            <a
+              href="/Sivaraj_G_CV.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-line px-7 py-3 text-sm font-semibold text-ink transition-colors duration-300 hover:border-brand hover:text-brand"
+            >
+              View My CV
+              <ArrowUpRight size={16} />
+            </a>
+          </div>
+        </div>
+
+        {/* Columns */}
+        <div className="grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1.2fr_1.2fr]">
+          {/* About */}
           <div>
             <a
               href="#home"
-              className="font-display text-2xl font-bold tracking-tight text-ink"
+              className="font-display text-2xl font-bold tracking-tight"
             >
               Sivaraj<span className="text-brand">.</span>
             </a>
 
-            <p className="mt-4 max-w-sm text-sm leading-7 text-muted">
+            <p className="mt-4 max-w-xs text-sm leading-7 text-muted">
               Fresher full stack developer building responsive web applications
               with React, Node.js and MongoDB.
             </p>
 
-            <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-xs text-ink">
+            <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-xs font-medium">
               <span className="h-2 w-2 rounded-full bg-brand" />
               Open to entry-level opportunities
             </p>
@@ -32,7 +71,7 @@ function Footer() {
 
           {/* Quick links */}
           <nav aria-label="Footer">
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-ink">
+            <h3 className="mb-5 text-sm font-semibold uppercase tracking-wider">
               Quick Links
             </h3>
             <ul className="space-y-3">
@@ -49,44 +88,62 @@ function Footer() {
             </ul>
           </nav>
 
-          {/* Connect */}
+          {/* Featured projects */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-ink">
-              Let&apos;s Connect
+            <h3 className="mb-5 text-sm font-semibold uppercase tracking-wider">
+              Featured Projects
             </h3>
-
-            <a
-              href={email.href}
-              className="break-all text-sm text-muted transition-colors duration-300 hover:text-brand"
-            >
-              {email.href.replace("mailto:", "")}
-            </a>
-
-            <div className="mt-5 flex gap-3">
-              {socialLinks.map(({ name, href, icon: Icon, external }) => (
-                <a
-                  key={name}
-                  href={href}
-                  target={external ? "_blank" : undefined}
-                  rel={external ? "noopener noreferrer" : undefined}
-                  aria-label={name}
-                  title={name}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand hover:bg-brand hover:text-page"
-                >
-                  <Icon size={18} />
-                </a>
+            <ul className="space-y-3">
+              {featuredProjects.map((project) => (
+                <li key={project.number}>
+                  <a
+                    href={project.live}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-muted transition-colors duration-300 hover:text-brand"
+                  >
+                    {project.name}
+                  </a>
+                </li>
               ))}
-            </div>
+              <li>
+                <a
+                  href="#projects"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-brand transition-colors duration-300 hover:text-brand-dark"
+                >
+                  View all projects
+                  <ArrowUpRight size={14} />
+                </a>
+              </li>
+            </ul>
+          </div>
 
-            <a
-              href="/Sivaraj_G_CV.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-brand transition-colors duration-300 hover:text-brand-dark"
-            >
-              View my CV
-              <ArrowUpRight size={16} />
-            </a>
+          {/* Get in touch */}
+          <div>
+            <h3 className="mb-5 text-sm font-semibold uppercase tracking-wider">
+              Get in Touch
+            </h3>
+            <ul className="space-y-3">
+              {socialLinks
+                .filter((link) => link.name !== "Resume")
+                .map(({ name, href, icon: Icon, external }) => (
+                  <li key={name}>
+                    <a
+                      href={href}
+                      target={external ? "_blank" : undefined}
+                      rel={external ? "noopener noreferrer" : undefined}
+                      className="group inline-flex items-center gap-3 text-sm text-muted transition-colors duration-300 hover:text-brand"
+                    >
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-ink transition-colors duration-300 group-hover:border-brand group-hover:text-brand">
+                        <Icon size={15} />
+                      </span>
+                      <span className="break-all">
+                        {name === "Email" ? emailAddress : name}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+            </ul>
           </div>
         </div>
 
@@ -102,10 +159,12 @@ function Footer() {
 
           <a
             href="#home"
-            className="inline-flex items-center gap-1.5 font-medium text-ink transition-colors duration-300 hover:text-brand"
+            className="inline-flex items-center gap-2 font-medium text-ink transition-colors duration-300 hover:text-brand"
           >
             Back to Top
-            <ArrowUp size={16} />
+            <span className="flex h-8 w-8 items-center justify-center rounded-full border border-line bg-surface">
+              <ArrowUp size={14} />
+            </span>
           </a>
         </div>
       </div>

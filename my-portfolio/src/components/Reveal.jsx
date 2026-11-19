@@ -1,36 +1,50 @@
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 
-// Fades its children in once, the first time they scroll into view.
+// Reveals each main block inside a section (heading, text, grids, cards)
+// when it scrolls into view, with a small stagger between blocks that
+// appear at the same time.
 function Reveal({ children }) {
   const ref = useRef(null);
-  // Browsers without IntersectionObserver just show the content straight away
-  const [visible, setVisible] = useState(
-    () => typeof IntersectionObserver === "undefined"
-  );
 
-  useEffect(() => {
-    const element = ref.current;
-    if (!element || visible) return;
+  useLayoutEffect(() => {
+    const wrapper = ref.current;
+    if (!wrapper) return;
+
+    // Without IntersectionObserver, leave everything visible
+    if (typeof IntersectionObserver === "undefined") return;
+
+    // wrapper > section > container > blocks
+    const items = wrapper.querySelectorAll(":scope > section > div > *");
+    if (items.length === 0) return;
+
+    items.forEach((item) => item.classList.add("reveal-item"));
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
+      (entries) => {
+        let batch = 0;
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.style.transitionDelay = `${batch * 90}ms`;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+          batch += 1;
+        });
       },
-      { threshold: 0, rootMargin: "0px 0px -60px 0px" }
+      { threshold: 0.08, rootMargin: "0px 0px -8% 0px" }
     );
 
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [visible]);
+    items.forEach((item) => observer.observe(item));
 
-  return (
-    <div ref={ref} className={`reveal ${visible ? "is-visible" : ""}`}>
-      {children}
-    </div>
-  );
+    return () => {
+      observer.disconnect();
+      items.forEach((item) => {
+        item.classList.remove("reveal-item", "is-visible");
+        item.style.transitionDelay = "";
+      });
+    };
+  }, []);
+
+  return <div ref={ref}>{children}</div>;
 }
 
 export default Reveal;

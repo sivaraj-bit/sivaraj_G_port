@@ -1,8 +1,41 @@
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, LayoutTemplate, RefreshCw, Server } from "lucide-react";
+import { socialLinks } from "../data/socials";
+
+const email = socialLinks.find((link) => link.name === "Email");
 
 // Edit this list to what you are actually learning right now.
 const learning = ["Node.js", "MongoDB", "Firebase"];
 
+// Facts shown in the card next to the introduction
+const facts = [
+  { label: "Degree", value: "B.Sc. Data Science" },
+  { label: "College", value: "Nehru Memorial College (Autonomous), Trichy" },
+  { label: "Graduated", value: "2026" },
+  { label: "Focus", value: "Full stack web development (MERN)" },
+  { label: "Status", value: "Open to entry-level roles" },
+];
+
+// How you work. Keep these true to how you really build projects.
+const approach = [
+  {
+    Icon: LayoutTemplate,
+    title: "Interface first",
+    text: "I start with a clean layout that works on every screen size.",
+  },
+  {
+    Icon: Server,
+    title: "Backend that fits",
+    text: "I add the Node.js, Express and MongoDB logic each project needs.",
+  },
+  {
+    Icon: RefreshCw,
+    title: "Improve as I learn",
+    text: "I go back to my projects and refine them as my skills grow.",
+  },
+];
+
+// Replace the vague periods (for example "The beginning") with real months
+// and years when you know them.
 const journey = [
   {
     number: "01",
@@ -50,8 +83,8 @@ function About() {
       className="overflow-hidden bg-page px-6 py-24 text-ink md:px-10 md:py-28"
     >
       <div className="mx-auto max-w-7xl">
-        {/* Heading and introduction */}
-        <div className="mb-20 grid gap-10 lg:grid-cols-2 lg:gap-16">
+        {/* Introduction and quick facts */}
+        <div className="mb-16 grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
           <div>
             <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-brand">
               About Me
@@ -59,25 +92,78 @@ function About() {
             <h2 className="text-4xl font-bold md:text-6xl">
               My journey so far<span className="text-brand">.</span>
             </h2>
+
+            <div className="mt-8 space-y-4 leading-7 text-muted">
+              <p>
+                I graduated in 2026 with a B.Sc. in Data Science from Nehru
+                Memorial College. Data science gave me a strong base in logic
+                and problem solving, and building websites is what made me want
+                to become a developer.
+              </p>
+              <p>
+                I like turning an idea into something people can use. I build
+                the interface first, add the backend it needs, and keep
+                improving each project as I learn.
+              </p>
+              <p className="text-ink">
+                I am open to entry-level opportunities where I can contribute,
+                learn from experienced developers and keep growing.
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-4 leading-7 text-muted">
-            <p>
-              I am a B.Sc. Data Science student at Nehru Memorial College,
-              graduating in 2026. Studying data science gave me a strong base in
-              logic and problem solving, and building websites is what made me
-              want to become a developer.
+          {/* Quick facts */}
+          <aside
+            aria-label="Quick facts"
+            className="self-start rounded-2xl border border-line bg-card p-7 md:p-8"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand">
+              Quick facts
             </p>
-            <p>
-              I like turning an idea into something people can use. I start with
-              a clean, responsive interface, then add the logic and the backend
-              it needs, and I keep improving each project as I learn.
-            </p>
-            <p className="text-ink">
-              I am open to entry-level opportunities where I can contribute,
-              learn from experienced developers and keep growing.
-            </p>
-          </div>
+
+            <dl className="mt-5 divide-y divide-line">
+              {facts.map((fact) => (
+                <div
+                  key={fact.label}
+                  className="flex flex-col gap-1 py-3 sm:flex-row sm:gap-6"
+                >
+                  <dt className="w-24 shrink-0 text-sm text-muted">
+                    {fact.label}
+                  </dt>
+                  <dd className="text-sm font-medium text-ink">{fact.value}</dd>
+                </div>
+              ))}
+            </dl>
+
+            {email && (
+              <a
+                href={email.href}
+                className="mt-4 inline-flex items-center gap-1.5 break-all text-sm font-medium text-brand transition-colors duration-300 hover:text-brand-dark"
+              >
+                {email.href.replace("mailto:", "")}
+                <ArrowUpRight size={16} className="shrink-0" />
+              </a>
+            )}
+          </aside>
+        </div>
+
+        {/* How I work */}
+        <div className="mb-20">
+          <h3 className="mb-6 text-2xl font-bold">How I work</h3>
+          <ul className="grid gap-5 md:grid-cols-3">
+            {approach.map(({ Icon, title, text }) => (
+              <li
+                key={title}
+                className="rounded-2xl border border-line bg-card p-6 transition-colors duration-300 hover:border-brand"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-surface text-brand">
+                  <Icon size={20} aria-hidden="true" />
+                </span>
+                <h4 className="mt-4 font-semibold">{title}</h4>
+                <p className="mt-2 text-sm leading-6 text-muted">{text}</p>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* Timeline */}

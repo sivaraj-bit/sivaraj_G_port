@@ -1,6 +1,10 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const STORAGE_KEY = "portfolio-welcome-seen";
+const WORD = "Hello";
+
+const SHOW_MS = 3000; // how long the animation plays before closing
+const EXIT_MS = 800; // must match the close transition in index.css
 
 function shouldSkip() {
   try {
@@ -16,6 +20,7 @@ function shouldSkip() {
 function WelcomeScreen() {
   // "show" -> "exit" -> "done"
   const [phase, setPhase] = useState(() => (shouldSkip() ? "done" : "show"));
+  const skipButtonRef = useRef(null);
   const isDone = phase === "done";
 
   // Tell the page while the welcome screen is playing, so the hero waits
@@ -26,12 +31,15 @@ function WelcomeScreen() {
     } else {
       delete root.dataset.welcome;
     }
+    return () => {
+      delete root.dataset.welcome;
+    };
   }, [phase]);
 
-  // Move through the phases on a timer
+  // Play, then close
   useEffect(() => {
     if (phase === "show") {
-      const timer = setTimeout(() => setPhase("exit"), 2400);
+      const timer = setTimeout(() => setPhase("exit"), SHOW_MS);
       return () => clearTimeout(timer);
     }
 
@@ -43,7 +51,7 @@ function WelcomeScreen() {
           /* storage unavailable, the screen will simply show again next time */
         }
         setPhase("done");
-      }, 700);
+      }, EXIT_MS);
       return () => clearTimeout(timer);
     }
   }, [phase]);
@@ -58,32 +66,79 @@ function WelcomeScreen() {
     };
   }, [isDone]);
 
+  // Keyboard: focus the Skip button, and let Escape skip the screen
+  useEffect(() => {
+    if (phase !== "show") return;
+    skipButtonRef.current?.focus();
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setPhase("exit");
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [phase]);
+
   if (isDone) return null;
 
   return (
     <div
       role="dialog"
+      aria-modal="true"
       aria-label="Welcome"
       className={`welcome-screen ${phase === "exit" ? "welcome-exit" : ""}`}
     >
-      <div className="text-center">
-        <p className="welcome-fade font-display text-5xl font-bold text-ink sm:text-7xl">
-          Sivaraj<span className="text-brand">.</span>
-        </p>
+      <div className="flex flex-col items-center px-6 text-center">
+        {/* The word, drawn letter by letter */}
+        <div className="inline-block">
+          <p
+            aria-label={WORD}
+            className="font-display text-7xl font-bold leading-none text-ink sm:text-9xl"
+          >
+            {WORD.split("").map((letter, index) => (
+              <span
+                key={index}
+                aria-hidden="true"
+                className="hello-letter"
+                style={{ animationDelay: `${index * 90}ms` }}
+              >
+                {letter}
+              </span>
+            ))}
+            <span
+              aria-hidden="true"
+              className="hello-dot text-brand"
+              style={{ animationDelay: `${WORD.length * 90 + 120}ms` }}
+            >
+              .
+            </span>
+          </p>
 
-        <div className="mx-auto mt-6 h-0.5 w-40 overflow-hidden rounded-full bg-line sm:w-56">
-          <div className="welcome-line h-full bg-brand" />
+          {/* Hand-drawn underline */}
+          <svg
+            viewBox="0 0 300 20"
+            className="mt-2 w-full text-brand"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              className="hello-underline"
+              d="M4 13 C 60 3, 120 3, 180 9 S 270 15, 296 5"
+              pathLength="1"
+              stroke="currentColor"
+              strokeWidth="5"
+              strokeLinecap="round"
+            />
+          </svg>
         </div>
 
-        <p
-          className="welcome-fade mt-6 text-sm uppercase tracking-[0.25em] text-muted sm:text-base"
-          style={{ animationDelay: "0.5s" }}
-        >
-          Welcome to my portfolio
+        <p className="hello-sub mt-6 text-sm uppercase tracking-[0.25em] text-muted sm:text-base">
+          I&apos;m <span className="font-semibold text-ink">Sivaraj</span> ·
+          Full Stack Developer
         </p>
       </div>
 
       <button
+        ref={skipButtonRef}
         type="button"
         onClick={() => setPhase("exit")}
         className="absolute bottom-8 right-8 rounded-full border border-line px-5 py-2 text-xs font-medium text-muted transition-colors duration-300 hover:border-brand hover:text-brand"

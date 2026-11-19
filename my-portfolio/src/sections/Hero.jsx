@@ -1,4 +1,6 @@
 import { ArrowDown, ArrowUpRight } from "lucide-react";
+import projects from "../data/projects";
+import { socialLinks } from "../data/socials";
 
 const roles = [
   { label: "Full Stack Developer", delay: "0s" },
@@ -6,10 +8,27 @@ const roles = [
   { label: "React Developer", delay: "-3s" },
 ];
 
+// Keep this list in line with your Skills section
+const techStack = [
+  "React",
+  "Node.js",
+  "Express.js",
+  "MongoDB",
+  "Tailwind CSS",
+  "JavaScript",
+];
+
+// Email, GitHub and LinkedIn only (the CV has its own button)
+const heroLinks = socialLinks.filter((link) => link.name !== "Resume");
+
+// Counted from projects.js, so they stay correct when you add projects
+const fullStackCount = projects.filter(
+  (project) => project.type === "Full Stack"
+).length;
+
 const stats = [
-  { value: "9", label: "Projects built" },
-  { value: "MERN", label: "Full stack focus" },
-  { value: "React", label: "Frontend focus" },
+  { value: String(projects.length), label: "Projects built" },
+  { value: String(fullStackCount), label: "Full stack apps" },
   { value: "2026", label: "B.Sc. Data Science graduate" },
 ];
 
@@ -44,7 +63,7 @@ function Hero() {
 
             {/* Animated role */}
             <div
-              className="relative mb-5 mt-3 h-9 animate-fade-up overflow-hidden [perspective:700px]"
+              className="relative mb-6 mt-3 h-9 animate-fade-up overflow-hidden [perspective:700px]"
               style={{ animationDelay: "0.2s" }}
               aria-label="Full Stack Developer, MERN Stack Developer and React Developer"
             >
@@ -60,26 +79,32 @@ function Hero() {
               ))}
             </div>
 
-            <h2
-              className="max-w-3xl animate-fade-up text-2xl font-semibold leading-snug sm:text-3xl md:text-4xl"
+            <p
+              className="max-w-xl animate-fade-up text-base leading-7 text-muted sm:text-lg"
               style={{ animationDelay: "0.25s" }}
             >
-              I build full stack web applications
-              <span className="text-brand"> from interface to database.</span>
-            </h2>
-
-            <p
-              className="mt-5 max-w-2xl animate-fade-up text-sm leading-7 text-muted sm:text-base"
-              style={{ animationDelay: "0.3s" }}
-            >
-              I am a fresher full stack developer who enjoys building clean,
-              responsive interfaces and applications that solve real problems.
-              I work with React on the frontend and with Node.js, Express and
-              MongoDB on the backend, and I keep learning better ways to build
-              for the web.
+              I build responsive React interfaces and the Node.js, Express and
+              MongoDB backends behind them. I am looking for an entry-level role
+              where I can keep learning and ship real products.
             </p>
 
-            {/* Buttons */}
+            {/* Tech stack */}
+            <ul
+              className="mt-6 flex animate-fade-up flex-wrap gap-2"
+              style={{ animationDelay: "0.3s" }}
+              aria-label="Technologies I use"
+            >
+              {techStack.map((tech) => (
+                <li
+                  key={tech}
+                  className="rounded-full border border-line bg-card px-3.5 py-1.5 text-xs font-medium text-ink"
+                >
+                  {tech}
+                </li>
+              ))}
+            </ul>
+
+            {/* Buttons and social links */}
             <div
               className="mt-8 flex animate-fade-up flex-wrap items-center gap-4"
               style={{ animationDelay: "0.35s" }}
@@ -93,13 +118,6 @@ function Hero() {
               </a>
 
               <a
-                href="#contact"
-                className="rounded-full border border-brand px-7 py-3 text-sm font-semibold text-ink transition-colors duration-300 hover:bg-brand hover:text-page"
-              >
-                Contact Me
-              </a>
-
-              <a
                 href="/Sivaraj_G_CV.pdf"
                 download="Sivaraj_G_CV.pdf"
                 className="inline-flex items-center gap-1.5 rounded-full border border-line px-7 py-3 text-sm font-semibold text-ink transition-colors duration-300 hover:border-brand hover:text-brand"
@@ -107,6 +125,22 @@ function Hero() {
                 Download CV
                 <ArrowDown size={16} />
               </a>
+
+              <div className="flex items-center gap-2 sm:ml-2">
+                {heroLinks.map(({ name, href, icon: Icon, external }) => (
+                  <a
+                    key={name}
+                    href={href}
+                    target={external ? "_blank" : undefined}
+                    rel={external ? "noopener noreferrer" : undefined}
+                    aria-label={name}
+                    title={name}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-card text-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-brand hover:text-brand"
+                  >
+                    <Icon size={18} />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -136,13 +170,13 @@ function Hero() {
         </div>
 
         {/* Highlights */}
-        <div className="mt-14 grid max-w-4xl grid-cols-2 gap-8 border-t border-line pt-10 sm:grid-cols-4">
+        <div className="mt-14 grid max-w-xl grid-cols-3 gap-6 border-t border-line pt-10">
           {stats.map((stat) => (
             <div key={stat.label}>
-              <p className="font-display text-2xl font-bold text-brand sm:text-3xl">
+              <p className="font-display text-2xl font-bold text-brand sm:text-4xl">
                 {stat.value}
               </p>
-              <p className="mt-2 text-sm text-muted">{stat.label}</p>
+              <p className="mt-2 text-xs text-muted sm:text-sm">{stat.label}</p>
             </div>
           ))}
         </div>

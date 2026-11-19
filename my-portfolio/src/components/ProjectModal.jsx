@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, X } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 
@@ -15,6 +15,7 @@ function Block({ title, children }) {
 
 function ProjectModal({ project, onClose }) {
   const dialogRef = useRef(null);
+  const [imageFailed, setImageFailed] = useState(false);
   const { caseStudy = {} } = project;
 
   // Open as a native modal dialog (handles focus trap and the Escape key)
@@ -32,14 +33,33 @@ function ProjectModal({ project, onClose }) {
     };
   }, []);
 
+  // Closing through the dialog lets the browser return focus to the button
+  // that opened it. The dialog's own "close" event then calls onClose.
+  const closeDialog = () => {
+    const dialog = dialogRef.current;
+    if (dialog?.open) dialog.close();
+    else onClose();
+  };
+
   return (
     <dialog
       ref={dialogRef}
       onClose={onClose}
-      onClick={(e) => e.target === dialogRef.current && onClose()}
+      onClick={(e) => e.target === dialogRef.current && closeDialog()}
       aria-labelledby="case-study-title"
-      className="m-auto max-h-[90vh] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-2xl border border-line bg-card p-0 text-ink backdrop:bg-black/70"
+      className="modal-dialog m-auto max-h-[90vh] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-2xl border border-line bg-card p-0 text-ink backdrop:bg-black/70"
     >
+      {project.image && !imageFailed && (
+        <img
+          src={project.image}
+          alt={`${project.name} website preview`}
+          width="672"
+          height="300"
+          onError={() => setImageFailed(true)}
+          className="h-44 w-full border-b border-line object-cover object-top sm:h-56"
+        />
+      )}
+
       <div className="p-6 sm:p-8">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -53,7 +73,7 @@ function ProjectModal({ project, onClose }) {
 
           <button
             type="button"
-            onClick={onClose}
+            onClick={closeDialog}
             aria-label="Close case study"
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line text-ink transition-colors hover:border-brand hover:text-brand"
           >
@@ -73,7 +93,7 @@ function ProjectModal({ project, onClose }) {
         )}
 
         {caseStudy.problem && (
-          <Block title="The problem">
+          <Block title="The goal">
             <p className="text-sm leading-7 text-muted">{caseStudy.problem}</p>
           </Block>
         )}

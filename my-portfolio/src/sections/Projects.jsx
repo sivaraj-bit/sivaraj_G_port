@@ -1,14 +1,26 @@
 import { useState } from "react";
+import { ArrowUpRight } from "lucide-react";
+import { FaGithub } from "react-icons/fa";
 import projects from "../data/projects";
+import { socialLinks } from "../data/socials";
 import ProjectCard from "../components/ProjectCard";
 import ProjectModal from "../components/ProjectModal";
 
 const filters = ["All", "Frontend", "Full Stack", "API"];
 
+const github = socialLinks.find((link) => link.name === "GitHub");
+
 // Featured projects first; the sort is stable, so the rest keep their order
 const orderedProjects = [...projects].sort(
   (a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))
 );
+
+// How many projects each filter shows (counted from projects.js)
+function getCount(filter) {
+  return filter === "All"
+    ? projects.length
+    : projects.filter((project) => project.type === filter).length;
+}
 
 function Projects() {
   const [activeFilter, setActiveFilter] = useState("All");
@@ -18,6 +30,8 @@ function Projects() {
     activeFilter === "All"
       ? orderedProjects
       : orderedProjects.filter((project) => project.type === activeFilter);
+
+  const total = filteredProjects.length;
 
   return (
     <section
@@ -37,9 +51,11 @@ function Projects() {
           <p className="mx-auto mt-5 max-w-xl leading-7 text-muted">
             A selection of projects I have built while learning web
             development, from static websites to full stack applications.
+            Start with the featured ones.
           </p>
         </div>
 
+        {/* Filters */}
         <div
           className="mb-12 flex flex-wrap justify-center gap-3"
           role="group"
@@ -60,12 +76,24 @@ function Projects() {
                 }`}
               >
                 {filter}
+                <span className="ml-1.5 text-xs font-medium opacity-70">
+                  ({getCount(filter)})
+                </span>
               </button>
             );
           })}
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Announces the result to screen readers when the filter changes */}
+        <p className="sr-only" role="status" aria-live="polite">
+          Showing {total} {total === 1 ? "project" : "projects"}
+        </p>
+
+        {/* Grid (the key restarts the fade-in whenever the filter changes) */}
+        <div
+          key={activeFilter}
+          className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+        >
           {filteredProjects.map((project) => (
             <ProjectCard
               key={project.number}
@@ -75,8 +103,27 @@ function Projects() {
           ))}
         </div>
 
-        {filteredProjects.length === 0 && (
+        {total === 0 && (
           <p className="py-10 text-center text-muted">No projects found.</p>
+        )}
+
+        {/* More on GitHub */}
+        {github && (
+          <div className="mt-14 text-center">
+            <p className="mb-4 text-sm text-muted">
+              Want to see more of my code?
+            </p>
+            <a
+              href={github.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-line px-7 py-3 text-sm font-semibold text-ink transition-colors duration-300 hover:border-brand hover:text-brand"
+            >
+              <FaGithub size={16} />
+              See all my repositories on GitHub
+              <ArrowUpRight size={16} />
+            </a>
+          </div>
         )}
       </div>
 
